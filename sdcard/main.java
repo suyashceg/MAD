@@ -1,39 +1,90 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="20dp"
-    android:orientation="vertical">
+package com.example.exno9;
  
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:textSize="30dp" />
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
  
-    <Button
-        android:id="@+id/button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="Write Data"
-        android:textSize="30dp" />
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
  
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="Read data"
-        android:textSize="30dp" />
+public class MainActivity extends AppCompatActivity
+{
+    EditText e1;
+    Button write,read,clear;
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
  
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="Clear"
-        android:textSize="30dp" />
+        e1= (EditText) findViewById(R.id.editText);
+        write= (Button) findViewById(R.id.button);
+        read= (Button) findViewById(R.id.button2);
+        clear= (Button) findViewById(R.id.button3);
  
-</LinearLayout>
+        write.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                String message=e1.getText().toString();
+                try
+                {
+                    File f=new File("/sdcard/myfile.txt");
+                    f.createNewFile();
+                    FileOutputStream fout=new FileOutputStream(f);
+                    fout.write(message.getBytes());
+                    fout.close();
+                    Toast.makeText(getBaseContext(),"Data Written in SDCARD",Toast.LENGTH_LONG).show();
+                }
+                catch (Exception e)
+                {
+                    Toast.makeText(getBaseContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+ 
+        read.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                String message;
+                String buf = "";
+                try
+                {
+                    File f = new File("/sdcard/myfile.txt");
+                    FileInputStream fin = new FileInputStream(f);
+                    BufferedReader br = new BufferedReader(new InputStreamReader(fin));
+                    while ((message = br.readLine()) != null)
+                    {
+                        buf += message;
+                    }
+                    e1.setText(buf);
+                    br.close();
+                    fin.close();
+                    Toast.makeText(getBaseContext(),"Data Recived from SDCARD",Toast.LENGTH_LONG).show();
+                }
+                catch (Exception e)
+                {
+                    Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+ 
+        clear.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                e1.setText("");
+            }
+        });
+    }
+}
